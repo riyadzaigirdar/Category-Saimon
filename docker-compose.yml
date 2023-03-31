@@ -1,0 +1,38 @@
+version: "3.4"
+
+services:
+  app:
+    image: category-image
+    container_name: category-container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: npm run dev
+    ports:
+      - 3000:3000
+    environment:
+      - PORT=3000
+      - NODE_ENV=local
+      - DB_URI=mongodb://db:27017
+      - DB_NAME=my_db
+      - REDIS_HOST=cache
+      - REDIS_PORT=6379
+    volumes:
+      - ./src:/app/src
+    depends_on:
+      - db
+      - cache
+
+  db:
+    image: mongo
+    container_name: category-db-container
+    restart: always
+    ports:
+      - 27017:27017
+
+  cache:
+    image: redis
+    container_name: category-cache-container
+    ports:
+      - 6379:6379

@@ -5,11 +5,13 @@ import {
   getCategoryDetailController,
   updateCategoryController,
   deactivateCategoryController,
+  getCategoryListController,
 } from "./controller";
 
 const router = express.Router();
 
 router
+  .get("", getCategoryListController)
   .get("/search", searchCategoryController)
   .get("/:id", getCategoryDetailController)
   .post("/", createCategoryController)

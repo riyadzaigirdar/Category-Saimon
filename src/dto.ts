@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateCategoryDto {
   @IsString()
@@ -17,4 +17,14 @@ export class UpdateCategoryDto {
   @IsOptional()
   @IsBoolean()
   isActive: boolean;
+}
+
+export class ListCategoryQueryDto {
+  @IsOptional()
+  @IsNumber()
+  page: number = 1;
+
+  @IsOptional()
+  @IsNumber()
+  count: number = 10;
 }

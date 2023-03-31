@@ -1,27 +1,38 @@
-import { Request, Response } from "express";
-import { UpdateCategoryDto } from "./dto";
 import {
   createCategory,
   deactivateCategory,
   getCategoryDetail,
+  listCategory,
   searchCategory,
   updateCategory,
 } from "./helper";
+import { Request, Response } from "express";
+import {
+  CreateCategoryDto,
+  ListCategoryQueryDto,
+  UpdateCategoryDto,
+} from "./dto";
 
-export const createCategoryController = async (req: Request, res: Response) => {
-  const newCategory = await createCategory(req.body);
+export const getCategoryListController = async (
+  req: Request,
+  res: Response
+) => {
+  const { query } = req;
 
-  if (!newCategory) {
-    res.status(500).json({
-      code: 500,
-      status: "failed",
-      msg: "Something went wrong try again later",
-      data: null,
-    });
-    return;
-  }
+  const queryObj = new ListCategoryQueryDto();
 
-  res.status(201).json(newCategory);
+  queryObj.page = Number(query.page) || queryObj.page;
+
+  queryObj.count = Number(query.count) || queryObj.count;
+
+  const categoryList = await listCategory(queryObj);
+
+  res.status(200).json({
+    code: 200,
+    status: "success",
+    msg: "Successfully get category detail",
+    data: categoryList,
+  });
 };
 
 export const searchCategoryController = async (req: Request, res: Response) => {
@@ -69,6 +80,22 @@ export const getCategoryDetailController = async (
     msg: "Successfully get category detail",
     data: categoryFound,
   });
+};
+
+export const createCategoryController = async (req: Request, res: Response) => {
+  const newCategory = await createCategory(req.body as CreateCategoryDto);
+
+  if (!newCategory) {
+    res.status(500).json({
+      code: 500,
+      status: "failed",
+      msg: "Something went wrong try again later",
+      data: null,
+    });
+    return;
+  }
+
+  res.status(201).json(newCategory);
 };
 
 export const updateCategoryController = async (req: Request, res: Response) => {

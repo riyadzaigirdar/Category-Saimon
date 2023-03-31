@@ -1,18 +1,26 @@
 import client from "./redis";
 import mongoose from "mongoose";
 import { categoryModel } from "./schemas/category.schema";
-import { CreateCategoryDto, UpdateCategoryDto } from "./dto";
+import {
+  CreateCategoryDto,
+  ListCategoryQueryDto,
+  UpdateCategoryDto,
+} from "./dto";
 
-export const createCategory = async (body: CreateCategoryDto) => {
-  try {
-    const newCategory = await categoryModel.create(body);
+export const listCategory = async (query: ListCategoryQueryDto) => {
+  const categoryList = await categoryModel
+    .find({})
+    .skip((query.page - 1) * query.count)
+    .limit(query.count)
+    .populate({
+      path: "subCategories",
+      populate: {
+        path: "subCategories",
+        model: "category",
+      },
+    });
 
-    newCategory.save();
-
-    return newCategory;
-  } catch (error) {
-    return null;
-  }
+  return { total: await categoryModel.find({}).count(), categoryList };
 };
 
 export const searchCategory = async (search: string) => {
@@ -69,6 +77,18 @@ export const getCategoryDetail = async (_id: string) => {
   await setToRedis(_id, JSON.stringify(category), 60);
 
   return category;
+};
+
+export const createCategory = async (body: CreateCategoryDto) => {
+  try {
+    const newCategory = await categoryModel.create(body);
+
+    newCategory.save();
+
+    return newCategory;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const updateCategory = async (_id: string, body: UpdateCategoryDto) => {

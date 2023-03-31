@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "d996463a-aa4e-44c5-b814-a2b0a5a8e1c0",
+		"name": "Category",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11725441"
+	},
+	"item": [
+		{
+			"name": "Create Category",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"category 5\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/v1/category",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"category"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Category Detail",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/v1/category/6426b62da5632770c9e85733",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"category",
+						"6426b62da5632770c9e85733"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Request",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"isActive\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/v1/category/6426b62da5632770c9e85733",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"category",
+						"6426b62da5632770c9e85733"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deactivate Category",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/v1/category/64266488e478f5dbf98039a0/deactivate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"category",
+						"64266488e478f5dbf98039a0",
+						"deactivate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Category",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/v1/category/search?query=5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"category",
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Category",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/v1/category",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"category"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
