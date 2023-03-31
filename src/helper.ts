@@ -80,6 +80,12 @@ export const getCategoryDetail = async (_id: string) => {
 };
 
 export const createCategory = async (body: CreateCategoryDto) => {
+  const categoryFound = await categoryModel.findOne({ name: body.name.trim() });
+
+  if (categoryFound) {
+    return null;
+  }
+
   try {
     const newCategory = await categoryModel.create(body);
 
@@ -100,6 +106,13 @@ export const updateCategory = async (_id: string, body: UpdateCategoryDto) => {
 
   if (body.name) {
     category.name = body.name;
+  }
+
+  if (
+    body.subCategories !== undefined &&
+    body.subCategories.some((item) => item === category._id.toString())
+  ) {
+    return null;
   }
 
   if (body.subCategories !== undefined) {

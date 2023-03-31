@@ -86,10 +86,10 @@ export const createCategoryController = async (req: Request, res: Response) => {
   const newCategory = await createCategory(req.body as CreateCategoryDto);
 
   if (!newCategory) {
-    res.status(500).json({
-      code: 500,
+    res.status(400).json({
+      code: 400,
       status: "failed",
-      msg: "Something went wrong try again later",
+      msg: "Category with that name already exists or something went wrong",
       data: null,
     });
     return;
@@ -105,10 +105,10 @@ export const updateCategoryController = async (req: Request, res: Response) => {
   );
 
   if (!categoryUpdated) {
-    res.status(500).json({
-      code: 500,
+    res.status(400).json({
+      code: 400,
       status: "failed",
-      msg: "Something went wrong! Try again later",
+      msg: "Category can't be added as its own child or something went wrong",
       data: null,
     });
   }
