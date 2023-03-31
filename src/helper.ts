@@ -1,11 +1,145 @@
-export const createCategory = () => {};
+import mongoose from "mongoose";
+import { CreateCategoryDto, UpdateCategoryDto } from "./dto";
+import redisClient from "./redis";
+import { categoryModel } from "./schemas/category.schema";
 
-export const searchCategory = () => {};
+export const createCategory = async (body: CreateCategoryDto) => {
+  try {
+    const newCategory = await categoryModel.create(body);
+    newCategory.save();
+    return newCategory;
+  } catch (error) {
+    return null;
+  }
+};
 
-export const getCategoryDetail = () => {};
+export const searchCategory = async (search: string) => {
+  try {
+    // const cached = await getFromRedis(search.trim());
 
-export const updateCategory = () => {};
+    // if (cached) {
+    //   return JSON.parse(cached);
+    // }
 
-export const deactivateCategory = () => {};
+    const category = await categoryModel
+      .findOne({
+        name: { $regex: search.trim(), $options: "i" },
+      })
+      .populate({
+        path: "subCategories",
+        populate: {
+          path: "subCategories",
+          model: "category",
+        },
+      });
 
-export const extractAllCategoryIds = () => {};
+    if (!category) {
+      return null;
+    }
+
+    // await setToRedis(search.trim(), JSON.stringify(category), 60);
+
+    return category;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getCategoryDetail = async (_id: string) => {
+  const category = await categoryModel.findOne({ _id }).populate({
+    path: "subCategories",
+    populate: {
+      path: "subCategories",
+      model: "category",
+    },
+  });
+
+  if (!category) {
+    return null;
+  }
+
+  return category;
+};
+
+export const updateCategory = async (_id: string, body: UpdateCategoryDto) => {
+  const category = await categoryModel.findOne({ _id });
+
+  if (!category) {
+    return null;
+  }
+
+  if (body.name) {
+    category.name = body.name;
+  }
+
+  if (body.subCategories !== undefined) {
+    category.subCategories = body.subCategories.map(
+      (item) => new mongoose.Types.ObjectId(item)
+    );
+  }
+
+  if (body.isActive !== undefined) {
+    category.isActive = body.isActive;
+  }
+
+  category.save();
+
+  return category;
+};
+
+export const deactivateCategory = async (_id: string) => {
+  const category = await categoryModel.findOne({ _id }).populate({
+    path: "subCategories",
+    populate: {
+      path: "subCategories",
+      model: "category",
+    },
+  });
+
+  if (!category) {
+    return null;
+  }
+
+  const ids = extractAllCategoryIds(category, new Set());
+  console.log("ids", ids);
+
+  const updatedDocs = await categoryModel.updateMany(
+    { _id: ids },
+    { $set: { isActive: false } },
+    { new: true }
+  );
+
+  return updatedDocs;
+};
+
+export const extractAllCategoryIds = (
+  category: any,
+  hashSet: Set<string>
+): string[] => {
+  const result = [];
+
+  // check for if the _id has already been pushed in the arr and is active
+  if (!hashSet.has(category._id.toString()) && category.isActive === true) {
+    result.push(category._id);
+    hashSet.add(category._id.toString());
+  }
+
+  // look for sub categories (if it has any)
+  for (let i = 0; i < category.subCategories.length; i++) {
+    result.push(...extractAllCategoryIds(category.subCategories[i], hashSet));
+  }
+
+  return result;
+};
+
+export const setToRedis = async (key: string, value: string, time: number) => {
+  await redisClient.set(key, value);
+
+  await redisClient.expire(key, time);
+};
+export const getFromRedis = async (key: string) => {
+  let res = await redisClient.get(key);
+
+  console.log("redis", res);
+  return res;
+};
