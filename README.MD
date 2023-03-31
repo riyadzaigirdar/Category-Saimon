@@ -19,10 +19,12 @@
         {
             "name": "category 5"
         }
+        
     
     2. GET CATEGORY DETAIL
     
        GET http://localhost:3000/api/v1/category/:id
+       
         
     3. UPDATE SINGLE CATEGORY
     
@@ -37,6 +39,7 @@
     4. DEACTIVATE CATEGORY ALONG WITH ITS CHILD CATEGORY
         
         PATCH http://localhost:3000/api/v1/category/:id/deactivate
+        
     
     5. SEARCH CATEGORY WITH ITS CHILD CATEGORIES NESTED IN IT
         
@@ -44,8 +47,11 @@
     
         QUERY SAMPLE => query='category 1'
         
+        
     6. LIST CATEGORY WITH PAGINATION
     
         GET http://localhost:3000/api/v1/category?page=1&count=10
         
         QUERY SAMPLE => page=1 & count=10
+        
+        
