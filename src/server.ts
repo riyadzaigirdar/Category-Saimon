@@ -9,6 +9,7 @@ import express, { Express, Request, Response } from "express";
 
 const app: Express = express();
 
+// set up db
 mongoose
   .connect(process.env.DB_URI!, {
     dbName: process.env.DB_NAME,
@@ -21,7 +22,7 @@ mongoose
 // allow all cors
 app.use(cors());
 
-// check for invalid json and decode url
+// check for invalid json
 app.use(
   express.json(),
   (err: any, _: Request, res: Response, next: CallableFunction) => {
@@ -38,6 +39,7 @@ app.use(
   }
 );
 
+// decode url
 app.use(express.urlencoded({ extended: false }));
 
 // set up morgan logs

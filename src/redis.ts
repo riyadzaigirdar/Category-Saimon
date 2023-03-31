@@ -1,11 +1,22 @@
+import { promisify } from "util";
 import { createClient } from "redis";
 
-const redisClient = createClient({
-  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+let options: any = {
+  port: process.env.REDIS_PORT,
+  host: process.env.REDIS_HOST,
+};
+
+// check if redis is password protected
+if (process.env.REDIS_PASSWORD) {
+  options["password"] = process.env.REDIS_PASSWORD;
+}
+
+const client = createClient(options);
+
+client.connect();
+
+client.on("connect", () => {
+  console.log("redis connected");
 });
 
-redisClient.on("error", (err) => console.log("Redis Client Error", err));
-
-redisClient.connect();
-
-export default redisClient;
+export default client;

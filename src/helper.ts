@@ -1,12 +1,14 @@
+import client from "./redis";
 import mongoose from "mongoose";
-import { CreateCategoryDto, UpdateCategoryDto } from "./dto";
-import redisClient from "./redis";
 import { categoryModel } from "./schemas/category.schema";
+import { CreateCategoryDto, UpdateCategoryDto } from "./dto";
 
 export const createCategory = async (body: CreateCategoryDto) => {
   try {
     const newCategory = await categoryModel.create(body);
+
     newCategory.save();
+
     return newCategory;
   } catch (error) {
     return null;
@@ -15,11 +17,11 @@ export const createCategory = async (body: CreateCategoryDto) => {
 
 export const searchCategory = async (search: string) => {
   try {
-    // const cached = await getFromRedis(search.trim());
+    const cached = await getFromRedis(search.trim());
 
-    // if (cached) {
-    //   return JSON.parse(cached);
-    // }
+    if (cached) {
+      return JSON.parse(cached);
+    }
 
     const category = await categoryModel
       .findOne({
@@ -37,7 +39,7 @@ export const searchCategory = async (search: string) => {
       return null;
     }
 
-    // await setToRedis(search.trim(), JSON.stringify(category), 60);
+    await setToRedis(search.trim(), JSON.stringify(category), 60);
 
     return category;
   } catch (error) {
@@ -46,6 +48,12 @@ export const searchCategory = async (search: string) => {
 };
 
 export const getCategoryDetail = async (_id: string) => {
+  const cached = await getFromRedis(_id);
+
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
   const category = await categoryModel.findOne({ _id }).populate({
     path: "subCategories",
     populate: {
@@ -57,6 +65,8 @@ export const getCategoryDetail = async (_id: string) => {
   if (!category) {
     return null;
   }
+
+  await setToRedis(_id, JSON.stringify(category), 60);
 
   return category;
 };
@@ -101,7 +111,6 @@ export const deactivateCategory = async (_id: string) => {
   }
 
   const ids = extractAllCategoryIds(category, new Set());
-  console.log("ids", ids);
 
   const updatedDocs = await categoryModel.updateMany(
     { _id: ids },
@@ -133,13 +142,8 @@ export const extractAllCategoryIds = (
 };
 
 export const setToRedis = async (key: string, value: string, time: number) => {
-  await redisClient.set(key, value);
-
-  await redisClient.expire(key, time);
+  await client.set(key, value, { EX: time });
 };
 export const getFromRedis = async (key: string) => {
-  let res = await redisClient.get(key);
-
-  console.log("redis", res);
-  return res;
+  return client.get(key);
 };
