@@ -1,3 +1,4 @@
 [submodule "submodule"]
 	path = submodule
 	url = git@github.com:riyadzaigirdar/classroom.git
+	branch = master
